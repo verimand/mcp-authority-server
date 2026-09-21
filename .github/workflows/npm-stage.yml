@@ -1,0 +1,74 @@
+name: Stage npm release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  stage:
+    name: Stage package on npm
+    runs-on: ubuntu-latest
+    environment: npm-production
+    steps:
+      - name: Checkout public package source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Node.js for trusted publishing
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+
+      - name: Verify release tag and public package boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const expectedFiles = [
+            'LICENSE',
+            'README.md',
+            'SECURITY.md',
+            'dist/stdio.js',
+            'package.json',
+            'server.json'
+          ].sort();
+          const ignoredDirs = new Set(['.git', '.github']);
+          function walk(dir, prefix = '') {
+            const files = [];
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              if (ignoredDirs.has(entry.name)) continue;
+              const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+              if (entry.isDirectory()) files.push(...walk(`${dir}/${entry.name}`, rel));
+              else files.push(rel);
+            }
+            return files;
+          }
+          const actualFiles = walk('.').sort();
+          if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) {
+            console.error('Unexpected package boundary:');
+            console.error(JSON.stringify(actualFiles, null, 2));
+            process.exit(1);
+          }
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          if (pkg.name !== '@verimand/mcp-authority-server') throw new Error('Unexpected package name');
+          if (pkg.repository?.url !== 'git+https://github.com/verimand/mcp-authority-server.git') {
+            throw new Error('repository.url must exactly match the trusted public repository');
+          }
+          if (pkg.publishConfig?.access !== 'public') throw new Error('publishConfig.access must be public');
+          const ref = process.env.GITHUB_REF_NAME || '';
+          if (ref !== `v${pkg.version}`) {
+            throw new Error(`release tag ${ref} does not match package version v${pkg.version}`);
+          }
+          NODE
+
+      - name: Dry-run npm package contents
+        run: npm pack --dry-run --ignore-scripts
+
+      - name: Stage package on npm with trusted publishing
+        run: npm stage publish --ignore-scripts --access public
