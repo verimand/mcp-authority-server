@@ -1,0 +1,40 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "dev.verimand/mcp-authority-server",
+  "title": "Verimand MCP Authority Server",
+  "description": "Agent-native access to verifiable VAGP authority.",
+  "repository": {
+    "url": "https://github.com/verimand/mcp-authority-server",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@verimand/mcp-authority-server",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "startupCommand": "npx -y @verimand/mcp-authority-server@0.1.0",
+      "support": "verimand.dev@gmail.com",
+      "security": "verimand.dev@gmail.com",
+      "vagp": "https://github.com/verimand/vagp",
+      "positioning": "MCP exposes capability. VAGP governs authority.",
+      "tools": [
+        "verimand.resolve",
+        "verimand.explain",
+        "verimand.get_authority",
+        "verimand.get_mandate",
+        "verimand.get_agent_dna",
+        "verimand.verify_permit"
+      ]
+    }
+  },
+  "websiteUrl": "https://verimand.dev/protocol"
+}

@@ -1,0 +1,54 @@
+{
+  "name": "@verimand/mcp-authority-server",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "verimand-mcp-authority-server": "./dist/stdio.js"
+  },
+  "files": [
+    "dist/stdio.js",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "server.json"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "4.6.5"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json && node scripts/build-bundle.mjs",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "prepack": "pnpm run build",
+    "smoke:stdio": "node scripts/smoke-stdio.mjs"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.0.0",
+    "esbuild": "0.27.2"
+  },
+  "description": "Verimand MCP Authority Server — agent-native access to verifiable VAGP authority.",
+  "license": "Apache-2.0",
+  "homepage": "https://verimand.dev/protocol",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/verimand/mcp-authority-server.git"
+  },
+  "bugs": {
+    "email": "verimand.dev@gmail.com"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "vagp",
+    "authority",
+    "verimand"
+  ],
+  "mcpName": "dev.verimand/mcp-authority-server",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
