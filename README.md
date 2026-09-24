@@ -1,5 +1,7 @@
 # Verimand MCP Authority Server
 
+[![M8ven Verified Publisher](https://m8ven.ai/badge/mcp/verimand/mcp-authority-server?variant=verified)](https://m8ven.ai/mcp/verimand/mcp-authority-server)
+
 MCP exposes capability. VAGP governs authority.
 
 The Verimand MCP Authority Server gives MCP-compatible clients agent-native access to verifiable VAGP authority. It exposes a small stdio tool surface for asking whether a trusted registered agent currently has authority, inspecting trusted authority state, and verifying VAGP execution permits.
@@ -25,17 +27,17 @@ Tool availability does not itself grant authority. This server is not yet the en
 
 ## Install and start
 
-After publication, a local MCP client can start the server with:
+A local MCP client can start the published server with:
 
 ```sh
 npx -y @verimand/mcp-authority-server@0.1.0
 ```
 
-When running from this repository before publication:
+When running from this public repository:
 
 ```sh
-pnpm --filter @verimand/mcp-authority-server build
-node apps/mcp-authority-server/dist/stdio.js
+npm ci
+node dist/stdio.js
 ```
 
 The process speaks MCP over stdio. stdout is reserved for MCP protocol messages; diagnostics go to stderr.
@@ -83,15 +85,20 @@ VAGP 0.3 is the public authority protocol: <https://github.com/verimand/vagp>. T
 
 ## Distribution status
 
-MCP-DIST-01.1 prepares a self-contained CLI package for public npm distribution. The Verimand VAGP authority runtime required by this MCP server is bundled into `dist/stdio.js`; the installed package has no runtime dependency on unpublished `@verimand/*` workspace packages.
+Version 0.1.0 is publicly available on npm and in the MCP Registry. The Verimand VAGP authority runtime required by this MCP server is bundled into `dist/stdio.js`; the installed package has no runtime dependency on unpublished `@verimand/*` workspace packages. The initial npm release was bootstrap-published without provenance. Future releases are configured for GitHub OIDC trusted staged publishing; this does not retroactively add provenance to 0.1.0.
 
 ## Development validation
 
+From a clean clone, with Node.js 22 or newer:
+
 ```sh
-pnpm --filter @verimand/mcp-authority-server build
-pnpm --filter @verimand/mcp-authority-server smoke:stdio
-pnpm vitest run tests/conformance/mcp-authority-server.test.ts
+npm ci
+npm run build
+npm test
+npm run smoke:stdio
 ```
+
+The public repository contains the audited bundled distribution, not the private TypeScript build source. Here `npm run build` checks the committed bundle's syntax and presence; it does not rebuild the bundle from source. The `node:test` suite starts the bundle over stdio, exercises all six public tools, checks a bounded permit and fail-closed cases, and verifies restart. The npm tarball remains restricted to the six published distribution files.
 
 ## Support and security reporting
 

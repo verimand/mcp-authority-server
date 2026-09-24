@@ -34,8 +34,12 @@ jobs:
             'LICENSE',
             'README.md',
             'SECURITY.md',
+            '.gitignore',
             'dist/stdio.js',
             'package.json',
+            'package-lock.json',
+            'scripts/verify-bundle.mjs',
+            'test/mcp-tools.test.mjs',
             'server.json'
           ].sort();
           const ignoredDirs = new Set(['.git', '.github']);
@@ -66,6 +70,12 @@ jobs:
             throw new Error(`release tag ${ref} does not match package version v${pkg.version}`);
           }
           NODE
+
+      - name: Install public verification dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Verify bundled server and public MCP tests
+        run: npm run build && npm test
 
       - name: Dry-run npm package contents
         run: npm pack --dry-run --ignore-scripts

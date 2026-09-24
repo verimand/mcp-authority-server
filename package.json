@@ -20,10 +20,10 @@
     "zod": "4.6.5"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.json && node scripts/build-bundle.mjs",
-    "typecheck": "tsc --project tsconfig.json --noEmit",
-    "prepack": "pnpm run build",
-    "smoke:stdio": "node scripts/smoke-stdio.mjs"
+    "build": "node scripts/verify-bundle.mjs",
+    "test": "node --test test/*.test.mjs",
+    "prepack": "npm run build",
+    "smoke:stdio": "node --test test/mcp-tools.test.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "2.0.0",
